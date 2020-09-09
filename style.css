@@ -1,0 +1,16 @@
+.results-list a {
+  display: flex;
+  align-items: center;
+}
+
+.swatch {
+  display: block;
+  width: 1em;
+  height: 1em;
+  border-radius: 0.2em;
+  margin-right: 0.5em;
+}
+
+table td {
+  padding: 0.25em 0.5em;
+}
