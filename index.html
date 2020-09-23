@@ -3,29 +3,45 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Accessibility Repo Eval</title>
+	<title>Accessibility stats experiment</title>
 
 	<link href="style.css" rel="stylesheet" type="text/css">
 </head>
 <body>
 
-	<h1>GitHub API</h1>
-	<form id="repoInfo">
-		<label for="owner">Repository Owner</label>
-		<input id="owner" type="text" placeholder="e.g. w3c">
-
-		<label for="repository">Repository Name</label>
-		<input id="repository" type="text" placeholder="e.g. aria-practices">
+	<h1>Find accessibility stats by github repository</h1>
+	<form id="repoInfo" class="repo-form">
+		<div class="url">
+			<span class="url-text">https://github.com/</span>
+			<div class="form-field">
+				<label for="owner">Repo Owner</label>
+				<input id="owner" type="text" placeholder="e.g. w3c">
+			</div>
+			<span class="url-text">/</span>
+			<div class="form-field">
+				<label for="repository">Repo Name</label>
+				<input id="repository" type="text" placeholder="e.g. aria-practices">
+			</div>
+		</div>
 	
-		<button type="submit">Submit</button>
+		<button type="submit">Go</button>
   </form>
-		
-	<h2>Labels</h2>
-	<div id="label-output"></div>
+	
+	<div class="results initial">
 
-	<h1>Search Issues</h1>
-	<button id="graph-test">Get</button>
-	<div id="graph-results"></div>
+		<div class="labels">
+			<h2>Issue Labels</h2>
+			<div id="label-output"></div>
+			<button type="button" id="graph-test">Get issue statistics</button>
+		</div>
+
+		<div class="stats">
+			<h2>Issue Statistics</h2>
+			<div id="graph-results"></div>
+		</div>
+	</div>
+
+	<div class="loading-status" role="status"></div>
 		
 	
 	<script type="module" src="app.js"></script>

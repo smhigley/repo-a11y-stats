@@ -1,5 +1,8 @@
 import token from './auth-token.js';
 
+// save reference to results container element
+const resultsEl = document.querySelector('.results');
+
 // list of keywords that could indicate an issue is realted to accessibility:
 const a11yKeywords = ['a11y', 'accessibility', 'aria', 'jaws', 'nvda', 'voiceover', 'narrator', 'talkback', 'zoomtext', 'screen reader', 'screenreader', 'assistive tech'];
 
@@ -31,9 +34,13 @@ async function getLabels(owner, repository) {
 		return;
 	}
 
+	console.log('called getLabels');
+	
+	// display loading message
+	updateLoading(true);
+
 	// get repo label data
 	const labels = await fetchRepoLabels(owner, repository);
-	console.log('All labels:', labels.map((label) => label.name));
 
 	// filter by keywords
 	const a11yLabels = labels.filter((label) => {
@@ -48,9 +55,12 @@ async function getLabels(owner, repository) {
 		return false;
 	});
 
+	updateLoading(false);
+	resultsEl.classList.remove('initial');
+	resultsEl.classList.add('labels');
 	const labelNames = a11yLabels.map((label) => label.name);
-	console.log('Accessibility-related labels:', labelNames);
 	renderLabelList('#label-output', a11yLabels);
+	resultsEl.classList.add('labels');
 	return labelNames;
 }
 
@@ -105,7 +115,7 @@ function renderResults(selector, results) {
 				<tr>
 					<th scope="row">% Resolved</th>
 					<td>${all.resolveRate}%</td>
-					<td>${a11yIssues.resolveRate}%</td>
+					<td>${Math.round(a11yIssues.resolveRate)}%</td>
 				</tr>
 				<tr>
 					<th scope="row">Average # comments</th>
@@ -320,6 +330,21 @@ function checkA11yIssue(issue, repoA11yLabels) {
 	return false;
 }
 
+/* Handle loading state */
+function updateLoading(loading) {
+	const classFunction = loading ? 'add' : 'remove';
+	const loadingEl = document.querySelector('.loading-status');
+
+	resultsEl.classList[classFunction]('loading');
+
+	if (loading) {
+		loadingEl.innerHTML = 'Loading...';
+	}
+	else {
+		loadingEl.innerHTML = '';
+	}
+}
+
 /*
  * Hook up DOM events
  */
@@ -339,6 +364,9 @@ form.addEventListener('submit', async (event) => {
 
 const testBtn = document.getElementById('graph-test');
 testBtn.addEventListener('click', async () => {
+	updateLoading(true);
 	const results = await analyzeIssues(owner, repository, repoA11yLabels);
 	renderResults('#graph-results', results);
+	updateLoading(false);
+	resultsEl.classList.remove('labels');
 });
