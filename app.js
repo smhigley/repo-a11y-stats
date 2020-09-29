@@ -1,5 +1,3 @@
-import token from './auth-token.js';
-
 // save reference to results container element
 const resultsEl = document.querySelector('.results');
 
@@ -33,8 +31,6 @@ async function getLabels(owner, repository) {
 		console.warn('Please enter github owner and repository name information');
 		return;
 	}
-
-	console.log('called getLabels');
 	
 	// display loading message
 	updateLoading(true);
@@ -113,7 +109,7 @@ function renderResults(selector, results) {
 			</thead>
 			<tbody>
 				<tr>
-					<th scope="row">% Resolved</th>
+					<th scope="row">% Resolved with PR</th>
 					<td>${all.resolveRate}%</td>
 					<td>${Math.round(a11yIssues.resolveRate)}%</td>
 				</tr>
@@ -147,7 +143,10 @@ async function getIssues(owner, repository, repoA11yLabels) {
 			) {
 				...issueFields
 			}
-			issues: issues(first:100, orderBy:{field: CREATED_AT, direction: DESC}) {
+			issues: issues(
+				orderBy:{field: CREATED_AT, direction: DESC},
+				first:100
+			) {
 				...issueFields
 			}
 		}
@@ -197,7 +196,7 @@ async function getIssues(owner, repository, repoA11yLabels) {
 		method: 'POST',
 		headers: {
 			'Accept': 'application/vnd.github.v4.idl',
-			'Authorization': `token ${token}`,
+			'Authorization': `token ${process.env.AUTH_TOKEN}`,
 			'Content-Type': 'application/json'
 		},
 		body: JSON.stringify({ query })
@@ -213,7 +212,6 @@ async function getIssues(owner, repository, repoA11yLabels) {
 
 async function analyzeIssues(owner, repo, repoA11yLabels) {
 	const response = await getIssues(owner, repo, repoA11yLabels);
-	console.log(response);
 
 	const issues = response.data.repository.issues.edges.map((issue) => issue.node);
 	const a11yIssues = response.data.repository.a11yIssues.edges.map((issue) => issue.node);
@@ -288,7 +286,6 @@ async function analyzeIssues(owner, repo, repoA11yLabels) {
 		resolveRate: (results.a11yIssues.resolvedCount / results.a11yIssues.count) * 100
 	};
 
-	console.log(results);
 	return results;
 }
 

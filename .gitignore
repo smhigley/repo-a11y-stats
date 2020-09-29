@@ -1,1 +1,2 @@
-auth-token.js
+.env
+node_modules/
