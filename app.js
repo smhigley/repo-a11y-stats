@@ -98,7 +98,7 @@ function renderResults(selector, results) {
 	const { all, a11yIssues } = results;
 
 	resultNode.innerHTML = `
-		<p>Percent of accessibility bugs in issues: ${results.all.a11yCount}%</p>
+		<p>Percent of accessibility bugs in last 100 issues: ${results.all.a11yCount}%</p>
 		<table>
 			<thead>
 				<tr>
@@ -110,13 +110,13 @@ function renderResults(selector, results) {
 			<tbody>
 				<tr>
 					<th scope="row">% Resolved with PR</th>
-					<td>${all.resolveRate}%</td>
+					<td>${Math.round(all.resolveRate)}%</td>
 					<td>${Math.round(a11yIssues.resolveRate)}%</td>
 				</tr>
 				<tr>
 					<th scope="row">Average # comments</th>
-					<td>${all.avgCommentCount}</td>
-					<td>${a11yIssues.avgCommentCount}</td>
+					<td>${Math.round(all.avgCommentCount)}</td>
+					<td>${Math.round(a11yIssues.avgCommentCount)}</td>
 				</tr>
 				<tr>
 					<th scope="row">Average time to close</th>
