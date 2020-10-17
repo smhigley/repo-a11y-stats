@@ -1,3 +1,7 @@
+import AUTH_TOKEN from './auth-token.js';
+
+console.log(AUTH_TOKEN);
+
 // save reference to results container element
 const resultsEl = document.querySelector('.results');
 
@@ -196,7 +200,7 @@ async function getIssues(owner, repository, repoA11yLabels) {
 		method: 'POST',
 		headers: {
 			'Accept': 'application/vnd.github.v4.idl',
-			'Authorization': `token ${process.env.AUTH_TOKEN}`,
+			'Authorization': `token ${AUTH_TOKEN}`,
 			'Content-Type': 'application/json'
 		},
 		body: JSON.stringify({ query })
