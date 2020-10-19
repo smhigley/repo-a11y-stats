@@ -1,5 +1,3 @@
-import AUTH_TOKEN from './auth-token.js';
-
 // save reference to results container element
 const resultsEl = document.querySelector('.results');
 
