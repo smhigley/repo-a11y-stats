@@ -95,6 +95,11 @@ function renderResults(selector, results) {
 		return;
 	}
 
+	if (results.status === 500) {
+		resultNode.innerHTML = 'Server error, please try again or file an issue on the <a href="https://github.com/smhigley/repo-a11y-stats">github repository</a>.';
+		return;
+	}
+
 	const { all, a11yIssues } = results;
 
 	resultNode.innerHTML = `
@@ -138,10 +143,10 @@ async function getIssues(owner, repository, a11yLabels) {
 	const url = `/.netlify/functions/github-api?${params}`;
 
 	const data = fetch(url, { method: 'GET' })
-		.then((response) => response.json())
-		.catch((err) => {
-			console.log('netlify error:', err);
-		});
+		.then((response) => ({
+			data: response.json(),
+			status: response.status
+		}));
 
 	return data;
 }
@@ -149,6 +154,10 @@ async function getIssues(owner, repository, a11yLabels) {
 async function analyzeIssues(owner, repo, repoA11yLabels) {
 	const response = await getIssues(owner, repo, repoA11yLabels);
 	console.log("data returned from netlify:", response);
+
+	if (response.status === 500) {
+		return response;
+	}
 
 	const issues = response.data.repository.issues.edges.map((issue) => issue.node);
 	const a11yIssues = response.data.repository.a11yIssues.edges.map((issue) => issue.node);
