@@ -142,25 +142,18 @@ async function getIssues(owner, repository, a11yLabels) {
 	const params = new URLSearchParams({ owner, repository, a11yLabels });
 	const url = `/.netlify/functions/github-api?${params}`;
 
-	const data = fetch(url, { method: 'GET' })
-		.then((response) => ({
-			data: response.json(),
-			status: response.status
-		}));
-
-	return data;
+	return fetch(url, { method: 'GET' })
+		.then((response) => response.json());
 }
 
 async function analyzeIssues(owner, repo, repoA11yLabels) {
-	const response = await getIssues(owner, repo, repoA11yLabels);
-	console.log("data returned from netlify:", response);
-
+	let response = await getIssues(owner, repo, repoA11yLabels);
 	if (response.status === 500) {
 		return response;
 	}
 
-	const issues = response.data.repository.issues.edges.map((issue) => issue.node);
-	const a11yIssues = response.data.repository.a11yIssues.edges.map((issue) => issue.node);
+	const issues = response.repository.issues.edges.map((issue) => issue.node);
+	const a11yIssues = response.repository.a11yIssues.edges.map((issue) => issue.node);
 	console.log('issues:', issues);
 	console.log('a11yissues', a11yIssues);
 

@@ -60,7 +60,7 @@ async function getIssues(owner, repository, repoA11yLabels) {
 
   const url = 'https://api.github.com/graphql';
 
-	const data = await fetch(url, {
+	return fetch(url, {
 		method: 'POST',
 		headers: {
 			'Accept': 'application/vnd.github.v4.idl',
@@ -74,22 +74,20 @@ async function getIssues(owner, repository, repoA11yLabels) {
 		console.warn(error);
 		return { error };
 	});
-
-	return data;
 }
 
 exports.handler = async function(event, context, callback) {
   
   const { owner, repository, a11yLabels } = event.queryStringParameters;
-  const data = await getIssues(owner, repository, a11yLabels.split(','));
+  const response = await getIssues(owner, repository, a11yLabels.split(','));
 
-  if (data.error) {
+  if (response.error) {
     callback(null, {
       headers: {
         "Access-Control-Allow-Origin": "*"
       },
       statusCode: 500,
-      body: JSON.stringify(data)
+      body: JSON.stringify(response)
     });
   }
   else {
@@ -98,7 +96,7 @@ exports.handler = async function(event, context, callback) {
         "Access-Control-Allow-Origin": "*"
       },
       statusCode: 200,
-      body: JSON.stringify(data)
+      body: JSON.stringify(response.data)
     });
   }
 };
