@@ -59,10 +59,8 @@ async function getIssues(owner, repository, repoA11yLabels) {
 
 
   const url = 'https://api.github.com/graphql';
-  
-  console.log('calling github api with token', AUTH_TOKEN);
 
-	const data = fetch(url, {
+	const data = await fetch(url, {
 		method: 'POST',
 		headers: {
 			'Accept': 'application/vnd.github.v4.idl',
@@ -81,10 +79,9 @@ async function getIssues(owner, repository, repoA11yLabels) {
 }
 
 exports.handler = async function(event, context, callback) {
-  console.log('api fn called with event', event, event.queryStringParameters);
   
   const { owner, repository, a11yLabels } = event.queryStringParameters;
-  const data = await getIssues(owner, repository, a11yLabels);
+  const data = await getIssues(owner, repository, a11yLabels.split(','));
 
   if (data.error) {
     callback(null, {

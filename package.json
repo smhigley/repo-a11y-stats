@@ -3,9 +3,6 @@
   "version": "1.0.0",
   "description": "A small service to compare accessibility-related github issue stats",
   "main": "app.js",
-  "scripts": {
-    "dev": "node -r dotenv/config server.js dotenv_config_path=.env"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/smhigley/repo-a11y-stats.git"
