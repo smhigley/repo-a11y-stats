@@ -1,7 +1,5 @@
 import AUTH_TOKEN from './auth-token.js';
 
-console.log(AUTH_TOKEN);
-
 // save reference to results container element
 const resultsEl = document.querySelector('.results');
 
@@ -137,85 +135,19 @@ function renderResults(selector, results) {
 	`;
 }
 
-async function getIssues(owner, repository, repoA11yLabels) {
-	const query = `query {
-		repository(owner: "${owner}", name: "${repository}") {
-			a11yIssues: issues(
-				filterBy:{ labels: ${JSON.stringify(repoA11yLabels)} },
-				orderBy:{field: CREATED_AT, direction: DESC},
-				first:100
-			) {
-				...issueFields
-			}
-			issues: issues(
-				orderBy:{field: CREATED_AT, direction: DESC},
-				first:100
-			) {
-				...issueFields
-			}
-		}
-	}
-	fragment issueFields on IssueConnection {
-		edges {
-			node {
-				closedAt
-				createdAt
-				number
-				state
-				title
-				url
-				firstComment: comments(first: 1) {
-					nodes {
-						createdAt
-					}
-				}
-				comments {
-					totalCount
-				}
-				labels(first:5) {
-					nodes {
-						name
-					}
-				}
-				timelineItems(itemTypes:CLOSED_EVENT, last: 1) {
-					nodes {
-						...on ClosedEvent {
-							closer {
-								...on PullRequest {
-									title
-									closedAt
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-	}`;
+async function getIssues(owner, repository, a11yLabels) {
+	const params = new URLSearchParams({ owner, repository, a11yLabels });
+	const url = `/.netlify/functions/github-api?${params}`;
 
-
-	const url = 'https://api.github.com/graphql';
-
-	const data = fetch(url, {
-		method: 'POST',
-		headers: {
-			'Accept': 'application/vnd.github.v4.idl',
-			'Authorization': `token ${AUTH_TOKEN}`,
-			'Content-Type': 'application/json'
-		},
-		body: JSON.stringify({ query })
-	})
-	.then((response) => response.json())
-	.catch((error) => {
-		console.warn(error);
-		return {};
-	});
+	const data = fetch(url, { method: 'GET' })
+		.then((response) => response.json());
 
 	return data;
 }
 
 async function analyzeIssues(owner, repo, repoA11yLabels) {
 	const response = await getIssues(owner, repo, repoA11yLabels);
+	console.log("data returned from netlify:", response);
 
 	const issues = response.data.repository.issues.edges.map((issue) => issue.node);
 	const a11yIssues = response.data.repository.a11yIssues.edges.map((issue) => issue.node);
