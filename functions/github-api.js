@@ -1,3 +1,4 @@
+const fetch = require('node-fetch');
 const { AUTH_TOKEN } = process.env;
 
 async function getIssues(owner, repository, repoA11yLabels) {
@@ -85,11 +86,22 @@ exports.handler = async function(event, context, callback) {
   const { owner, repository, a11yLabels } = event.queryStringParameters;
   const data = await getIssues(owner, repository, a11yLabels);
 
-  callback(null, {
-    headers: {
-      "Access-Control-Allow-Origin": "*"
-    },
-    statusCode: 200,
-    body: JSON.stringify(data)
-  });
+  if (data.error) {
+    callback(null, {
+      headers: {
+        "Access-Control-Allow-Origin": "*"
+      },
+      statusCode: 500,
+      body: JSON.stringify(data)
+    });
+  }
+  else {
+    callback(null, {
+      headers: {
+        "Access-Control-Allow-Origin": "*"
+      },
+      statusCode: 200,
+      body: JSON.stringify(data)
+    });
+  }
 };

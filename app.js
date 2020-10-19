@@ -138,7 +138,10 @@ async function getIssues(owner, repository, a11yLabels) {
 	const url = `/.netlify/functions/github-api?${params}`;
 
 	const data = fetch(url, { method: 'GET' })
-		.then((response) => response.json());
+		.then((response) => response.json())
+		.catch((err) => {
+			console.log('netlify error:', err);
+		});
 
 	return data;
 }
